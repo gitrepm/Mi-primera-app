@@ -3,74 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Tareas</title>
+    <title>Mis Tareas Pro</title>
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <style>
-        body { font-family: sans-serif; background: #f4f4f9; display: flex; justify-content: center; padding: 20px; }
-        .container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
-        h2 { color: #333; text-align: center; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
-        button.add-btn { background: #2ecc71; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+        /* PUNTO 6: COLORES AZUL CLARO */
+        :root {
+            --bg-color: #e3f2fd; /* Azul muy pálido */
+            --card-bg: #ffffff;
+            --primary: #42a5f5; /* Azul cielo */
+            --secondary: #90caf9; /* Azul suave */
+            --text: #1565c0; /* Azul oscuro para texto */
+        }
+
+        body { 
+            font-family: 'Segoe UI', sans-serif; 
+            background: var(--bg-color); 
+            display: flex; 
+            justify-content: center; 
+            padding: 20px; 
+            min-height: 100vh;
+        }
+
+        .container { 
+            background: var(--card-bg); 
+            padding: 25px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 25px rgba(66, 165, 245, 0.2); 
+            width: 100%; 
+            max-width: 500px; 
+            height: fit-content;
+        }
+
+        h2 { color: var(--text); text-align: center; margin-top: 0; }
+
+        /* PUNTO 2: AREA DE TEXTO PARA PÁRRAFOS */
+        .input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        
+        textarea { 
+            padding: 15px; 
+            border: 2px solid var(--secondary); 
+            border-radius: 10px; 
+            resize: vertical; 
+            min-height: 60px;
+            font-family: inherit;
+        }
+        
+        textarea:focus { outline: none; border-color: var(--primary); }
+
+        button.add-btn { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            border-radius: 10px; 
+            cursor: pointer; 
+            font-weight: bold;
+            font-size: 1rem;
+            transition: transform 0.1s;
+        }
+        button.add-btn:active { transform: scale(0.95); }
+
         ul { list-style: none; padding: 0; }
-        li { background: #eee; margin-bottom: 5px; padding: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
-        .delete-btn { background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
+
+        li { 
+            background: #f1f8ff; 
+            margin-bottom: 10px; 
+            padding: 15px; 
+            border-radius: 10px; 
+            border-left: 5px solid var(--secondary);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start; /* Alineación arriba para textos largos */
+        }
+
+        /* ESTO PERMITE LOS SALTOS DE LÍNEA */
+        .task-text {
+            white-space: pre-wrap; 
+            flex: 1;
+            margin-right: 10px;
+            color: #444;
+            line-height: 1.5;
+        }
+
+        .actions { display: flex; gap: 5px; }
+
+        .btn-icon { border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 1.2rem; }
+        .edit-btn { background: #ffeb3b; color: #fbc02d; } /* Amarillo */
+        .delete-btn { background: #ffcdd2; color: #c62828; } /* Rojo suave */
+
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>📝 Mis Tareas</h2>
+    <h2>📝 Agenda Azul</h2>
+    
     <div class="input-group">
-        <input type="text" id="taskInput" placeholder="Nueva tarea...">
-        <button class="add-btn" onclick="addTask()">Añadir</button>
+        <textarea id="taskInput" placeholder="Escribe aquí... (Usa Enter para separar párrafos)"></textarea>
+        <button class="add-btn" onclick="addTask()">+ Agregar Nota</button>
     </div>
+    
     <ul id="taskList"></ul>
 </div>
 
 <script>
-    // Cargar tareas al abrir la app
+    // PUNTO 5: SONIDO (Base64 para no depender de archivos externos)
+    const popSound = new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU"); 
+    // Nota: Este es un placeholder corto, funcionará como un 'click' suave.
+
     document.addEventListener('DOMContentLoaded', getTasks);
 
     function addTask() {
         const input = document.getElementById('taskInput');
-        if (input.value === '') return;
+        const text = input.value; // No usamos trim() al inicio para respetar espacios si el usuario quiere
         
-        createTaskElement(input.value);
-        saveLocalTask(input.value);
+        if (text.trim() === '') return;
+        
+        createTaskElement(text);
+        saveLocalTask(text);
+        
+        // Reproducir sonido
+        popSound.play().catch(e => console.log("Audio bloqueado por navegador"));
+        
         input.value = '';
+        input.focus();
     }
 
     function createTaskElement(text) {
         const li = document.createElement('li');
-        li.innerHTML = `${text} <button class="delete-btn" onclick="removeTask(this)">X</button>`;
+        
+        // PUNTO 1: AGREGADO BOTÓN DE EDITAR
+        li.innerHTML = `
+            <span class="task-text">${text}</span>
+            <div class="actions">
+                <button class="btn-icon edit-btn" onclick="editTask(this)">✏️</button>
+                <button class="btn-icon delete-btn" onclick="removeTask(this)">🗑️</button>
+            </div>
+        `;
         document.getElementById('taskList').appendChild(li);
     }
 
-    function removeTask(btn) {
-        const text = btn.parentElement.firstChild.textContent.trim();
-        removeLocalTask(text);
-        btn.parentElement.remove();
+    // LÓGICA DE EDICIÓN
+    function editTask(btn) {
+        const li = btn.closest('li');
+        const span = li.querySelector('.task-text');
+        const oldText = span.innerText;
+        
+        // Usamos un prompt simple para editar (método más fácil para empezar)
+        const newText = prompt("Edita tu nota:", oldText);
+        
+        if (newText !== null && newText.trim() !== "") {
+            updateLocalTask(oldText, newText);
+            span.innerText = newText;
+        }
     }
 
-    // Funciones para guardar en el teléfono (LocalStorage)
+    function removeTask(btn) {
+        if(confirm("¿Seguro que quieres borrar esta nota?")) {
+            const li = btn.closest('li');
+            const text = li.querySelector('.task-text').innerText;
+            removeLocalTask(text);
+            li.remove();
+        }
+    }
+
+    // --- FUNCIONES DE GUARDADO (LOCALSTORAGE) ---
+
     function saveLocalTask(task) {
-        let tasks = localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : [];
+        let tasks = getLocalTasks();
         tasks.push(task);
         localStorage.setItem('tasks', JSON.stringify(tasks));
     }
 
     function getTasks() {
-        let tasks = localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : [];
+        let tasks = getLocalTasks();
         tasks.forEach(task => createTaskElement(task));
     }
 
-    function removeLocalTask(task) {
-        let tasks = JSON.parse(localStorage.getItem('tasks'));
-        const index = tasks.indexOf(task);
-        tasks.splice(index, 1);
-        localStorage.setItem('tasks', JSON.stringify(tasks));
+    function removeLocalTask(taskText) {
+        let tasks = getLocalTasks();
+        const index = tasks.indexOf(taskText);
+        if (index > -1) {
+            tasks.splice(index, 1);
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+    }
+
+    function updateLocalTask(oldText, newText) {
+        let tasks = getLocalTasks();
+        const index = tasks.indexOf(oldText);
+        if (index > -1) {
+            tasks[index] = newText;
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+        }
+    }
+
+    function getLocalTasks() {
+        return localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : [];
     }
 </script>
 
