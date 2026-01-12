@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Primera App</title>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            color: white;
+            text-align: center;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            color: #333;
+            width: 80%;
+        }
+        button {
+            background: #6e8efb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>¡Hola, soy tu App! 🚀</h1>
+        <p>Esta aplicación fue creada con la ayuda de Gemini.</p>
+        <button onclick="saludar()">¡Tócame!</button>
+        <p id="mensaje"></p>
+    </div>
+
+    <script>
+        function saludar() {
+            const mensajes = [
+                "¡Lo lograste!",
+                "Estás programando...",
+                "¡Esto es solo el comienzo!",
+                "¿Qué tal se ve en tu móvil?"
+            ];
+            const random = mensajes[Math.floor(Math.random() * mensajes.length)];
+            document.getElementById('mensaje').innerText = random;
+        }
+    </script>
+</body>
+</html>
