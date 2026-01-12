@@ -3,172 +3,178 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Tareas Pro</title>
+    <title>Mis Notas</title>
     <meta name="mobile-web-app-capable" content="yes">
     <style>
-        /* PUNTO 6: COLORES AZUL CLARO */
         :root {
-            --bg-color: #e3f2fd; /* Azul muy pálido */
-            --card-bg: #ffffff;
-            --primary: #42a5f5; /* Azul cielo */
-            --secondary: #90caf9; /* Azul suave */
-            --text: #1565c0; /* Azul oscuro para texto */
+            --bg-color: #e3f2fd;
+            --primary: #42a5f5;
+            --secondary: #90caf9;
+            --text: #1565c0;
+            --danger: #ef5350;
         }
 
-        body { 
-            font-family: 'Segoe UI', sans-serif; 
-            background: var(--bg-color); 
-            display: flex; 
-            justify-content: center; 
-            padding: 20px; 
-            min-height: 100vh;
-        }
-
-        .container { 
-            background: var(--card-bg); 
-            padding: 25px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 25px rgba(66, 165, 245, 0.2); 
-            width: 100%; 
-            max-width: 500px; 
-            height: fit-content;
-        }
-
-        h2 { color: var(--text); text-align: center; margin-top: 0; }
-
-        /* PUNTO 2: AREA DE TEXTO PARA PÁRRAFOS */
-        .input-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg-color); display: flex; justify-content: center; padding: 15px; min-height: 100vh; margin: 0; }
+        .container { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 500px; }
         
+        h2 { color: var(--text); text-align: center; margin-bottom: 15px; }
+
+        /* PUNTO 1: Área de texto que se expande */
         textarea { 
-            padding: 15px; 
-            border: 2px solid var(--secondary); 
-            border-radius: 10px; 
-            resize: vertical; 
-            min-height: 60px;
-            font-family: inherit;
+            width: 100%; box-sizing: border-box; padding: 15px; 
+            border: 2px solid var(--secondary); border-radius: 12px; 
+            font-size: 16px; font-family: inherit; resize: none;
+            overflow: hidden; min-height: 80px;
         }
-        
-        textarea:focus { outline: none; border-color: var(--primary); }
 
-        button.add-btn { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 12px; 
-            border-radius: 10px; 
-            cursor: pointer; 
-            font-weight: bold;
-            font-size: 1rem;
-            transition: transform 0.1s;
+        .btn-main { 
+            width: 100%; background: var(--primary); color: white; border: none; 
+            padding: 12px; border-radius: 10px; font-weight: bold; margin-top: 10px; cursor: pointer;
         }
-        button.add-btn:active { transform: scale(0.95); }
 
-        ul { list-style: none; padding: 0; }
-
+        /* Lista de tareas */
+        ul { list-style: none; padding: 0; margin-top: 20px; }
         li { 
-            background: #f1f8ff; 
-            margin-bottom: 10px; 
-            padding: 15px; 
-            border-radius: 10px; 
-            border-left: 5px solid var(--secondary);
-            display: flex; 
-            justify-content: space-between; 
-            align-items: flex-start; /* Alineación arriba para textos largos */
+            background: #f8fbff; margin-bottom: 12px; padding: 15px; 
+            border-radius: 12px; border-left: 5px solid var(--primary);
+            display: flex; flex-direction: column; gap: 10px;
         }
+        .task-text { white-space: pre-wrap; color: #333; line-height: 1.5; word-break: break-word; }
+        
+        .actions { display: flex; gap: 10px; justify-content: flex-end; }
+        .btn-small { border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+        .edit-btn { background: #fff9c4; color: #f9a825; }
+        .del-btn { background: #ffebee; color: #c62828; }
 
-        /* ESTO PERMITE LOS SALTOS DE LÍNEA */
-        .task-text {
-            white-space: pre-wrap; 
-            flex: 1;
-            margin-right: 10px;
-            color: #444;
-            line-height: 1.5;
+        /* PUNTO 3 y 4: Botones de control inferior */
+        .controls { margin-top: 30px; display: flex; flex-direction: column; gap: 10px; border-top: 1px solid #eee; pt: 15px; }
+        .btn-report { background: #66bb6a; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; }
+        .btn-clear { background: var(--danger); color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; opacity: 0.8; }
+
+        /* PUNTO 2: Ventana Modal de Edición */
+        #editModal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 100;
         }
-
-        .actions { display: flex; gap: 5px; }
-
-        .btn-icon { border: none; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 1.2rem; }
-        .edit-btn { background: #ffeb3b; color: #fbc02d; } /* Amarillo */
-        .delete-btn { background: #ffcdd2; color: #c62828; } /* Rojo suave */
-
+        .modal-content { background: white; width: 90%; max-width: 450px; padding: 20px; border-radius: 15px; }
+        #editArea { width: 100%; min-height: 250px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>📝 Agenda Azul</h2>
+    <h2>📝 Mi Agenda Pro</h2>
     
-    <div class="input-group">
-        <textarea id="taskInput" placeholder="Escribe aquí... (Usa Enter para separar párrafos)"></textarea>
-        <button class="add-btn" onclick="addTask()">+ Agregar Nota</button>
-    </div>
+    <textarea id="taskInput" placeholder="Escribe aquí... (Enter para párrafos)" oninput="autoExpand(this)"></textarea>
+    <button class="btn-main" onclick="addTask()">+ Guardar Nota</button>
     
     <ul id="taskList"></ul>
+
+    <div class="controls">
+        <button class="btn-report" onclick="downloadReport()">📥 Descargar Reporte (.txt)</button>
+        <button class="btn-clear" onclick="clearAll()">⚠️ Borrar Todo</button>
+    </div>
+</div>
+
+<div id="editModal">
+    <div class="modal-content">
+        <h3>Editar Nota</h3>
+        <textarea id="editArea"></textarea>
+        <div style="display:flex; gap:10px;">
+            <button class="btn-main" onclick="saveEdit()">Actualizar</button>
+            <button class="btn-main" style="background:#ccc" onclick="closeEdit()">Cancelar</button>
+        </div>
+    </div>
 </div>
 
 <script>
-    // PUNTO 5: SONIDO (Base64 para no depender de archivos externos)
-    const popSound = new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU"); 
-    // Nota: Este es un placeholder corto, funcionará como un 'click' suave.
+    let currentEditSpan = null;
+    const popSound = new Audio("data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YU");
 
     document.addEventListener('DOMContentLoaded', getTasks);
 
+    // Expande el área de texto automáticamente
+    function autoExpand(el) {
+        el.style.height = 'auto';
+        el.style.height = el.scrollHeight + 'px';
+    }
+
     function addTask() {
         const input = document.getElementById('taskInput');
-        const text = input.value; // No usamos trim() al inicio para respetar espacios si el usuario quiere
+        if (input.value.trim() === '') return;
         
-        if (text.trim() === '') return;
-        
-        createTaskElement(text);
-        saveLocalTask(text);
-        
-        // Reproducir sonido
-        popSound.play().catch(e => console.log("Audio bloqueado por navegador"));
-        
+        createTaskElement(input.value);
+        saveLocalTask(input.value);
+        popSound.play().catch(e => {});
         input.value = '';
-        input.focus();
+        input.style.height = '80px';
     }
 
     function createTaskElement(text) {
         const li = document.createElement('li');
-        
-        // PUNTO 1: AGREGADO BOTÓN DE EDITAR
         li.innerHTML = `
             <span class="task-text">${text}</span>
             <div class="actions">
-                <button class="btn-icon edit-btn" onclick="editTask(this)">✏️</button>
-                <button class="btn-icon delete-btn" onclick="removeTask(this)">🗑️</button>
+                <button class="btn-small edit-btn" onclick="openEdit(this)">✏️ Editar</button>
+                <button class="btn-small del-btn" onclick="removeTask(this)">🗑️ Borrar</button>
             </div>
         `;
         document.getElementById('taskList').appendChild(li);
     }
 
-    // LÓGICA DE EDICIÓN
-    function editTask(btn) {
-        const li = btn.closest('li');
-        const span = li.querySelector('.task-text');
-        const oldText = span.innerText;
-        
-        // Usamos un prompt simple para editar (método más fácil para empezar)
-        const newText = prompt("Edita tu nota:", oldText);
-        
-        if (newText !== null && newText.trim() !== "") {
-            updateLocalTask(oldText, newText);
-            span.innerText = newText;
-        }
+    // PUNTO 2: Lógica de Edición Amplia
+    function openEdit(btn) {
+        currentEditSpan = btn.closest('li').querySelector('.task-text');
+        const modal = document.getElementById('editModal');
+        const editArea = document.getElementById('editArea');
+        editArea.value = currentEditSpan.innerText;
+        modal.style.display = 'flex';
+        autoExpand(editArea);
     }
+
+    function saveEdit() {
+        const newText = document.getElementById('editArea').value;
+        const oldText = currentEditSpan.innerText;
+        updateLocalTask(oldText, newText);
+        currentEditSpan.innerText = newText;
+        closeEdit();
+    }
+
+    function closeEdit() { document.getElementById('editModal').style.display = 'none'; }
 
     function removeTask(btn) {
-        if(confirm("¿Seguro que quieres borrar esta nota?")) {
-            const li = btn.closest('li');
-            const text = li.querySelector('.task-text').innerText;
+        if(confirm("¿Borrar esta nota?")) {
+            const text = btn.closest('li').querySelector('.task-text').innerText;
             removeLocalTask(text);
-            li.remove();
+            btn.closest('li').remove();
         }
     }
 
-    // --- FUNCIONES DE GUARDADO (LOCALSTORAGE) ---
+    // PUNTO 4: Borrar Todo
+    function clearAll() {
+        if(confirm("¿Estás seguro, se borraran todos los datos?")) {
+            localStorage.removeItem('tasks');
+            document.getElementById('taskList').innerHTML = '';
+        }
+    }
 
+    // PUNTO 3: Descargar Reporte
+    function downloadReport() {
+        const tasks = getLocalTasks();
+        if(tasks.length === 0) return alert("No hay notas para descargar");
+        
+        let content = "--- REPORTE DE NOTAS ---\n\n";
+        tasks.forEach((t, i) => content += `${i+1}. ${t}\n\n------------------\n\n`);
+        
+        const blob = new Blob([content], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Mis_Notas.txt';
+        a.click();
+    }
+
+    // --- PERSISTENCIA LOCAL ---
     function saveLocalTask(task) {
         let tasks = getLocalTasks();
         tasks.push(task);
@@ -176,26 +182,19 @@
     }
 
     function getTasks() {
-        let tasks = getLocalTasks();
-        tasks.forEach(task => createTaskElement(task));
+        getLocalTasks().forEach(task => createTaskElement(task));
     }
 
     function removeLocalTask(taskText) {
         let tasks = getLocalTasks();
         const index = tasks.indexOf(taskText);
-        if (index > -1) {
-            tasks.splice(index, 1);
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-        }
+        if (index > -1) { tasks.splice(index, 1); localStorage.setItem('tasks', JSON.stringify(tasks)); }
     }
 
     function updateLocalTask(oldText, newText) {
         let tasks = getLocalTasks();
         const index = tasks.indexOf(oldText);
-        if (index > -1) {
-            tasks[index] = newText;
-            localStorage.setItem('tasks', JSON.stringify(tasks));
-        }
+        if (index > -1) { tasks[index] = newText; localStorage.setItem('tasks', JSON.stringify(tasks)); }
     }
 
     function getLocalTasks() {
