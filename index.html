@@ -3,63 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Primera App</title>
+    <title>Mis Tareas</title>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            color: white;
-            text-align: center;
-        }
-        .card {
-            background: white;
-            padding: 2rem;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-            color: #333;
-            width: 80%;
-        }
-        button {
-            background: #6e8efb;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 1rem;
-            margin-top: 20px;
-            cursor: pointer;
-        }
+        body { font-family: sans-serif; background: #f4f4f9; display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        h2 { color: #333; text-align: center; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        button.add-btn { background: #2ecc71; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; }
+        ul { list-style: none; padding: 0; }
+        li { background: #eee; margin-bottom: 5px; padding: 10px; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; }
+        .delete-btn { background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h1>¡Hola, soy tu App! 🚀</h1>
-        <p>Esta aplicación fue creada con la ayuda de Gemini.</p>
-        <button onclick="saludar()">¡Tócame!</button>
-        <p id="mensaje"></p>
+<div class="container">
+    <h2>📝 Mis Tareas</h2>
+    <div class="input-group">
+        <input type="text" id="taskInput" placeholder="Nueva tarea...">
+        <button class="add-btn" onclick="addTask()">Añadir</button>
     </div>
+    <ul id="taskList"></ul>
+</div>
 
-    <script>
-        function saludar() {
-            const mensajes = [
-                "¡Lo lograste!",
-                "Estás programando...",
-                "¡Esto es solo el comienzo!",
-                "¿Qué tal se ve en tu móvil?"
-            ];
-            const random = mensajes[Math.floor(Math.random() * mensajes.length)];
-            document.getElementById('mensaje').innerText = random;
-        }
-    </script>
+<script>
+    // Cargar tareas al abrir la app
+    document.addEventListener('DOMContentLoaded', getTasks);
+
+    function addTask() {
+        const input = document.getElementById('taskInput');
+        if (input.value === '') return;
+        
+        createTaskElement(input.value);
+        saveLocalTask(input.value);
+        input.value = '';
+    }
+
+    function createTaskElement(text) {
+        const li = document.createElement('li');
+        li.innerHTML = `${text} <button class="delete-btn" onclick="removeTask(this)">X</button>`;
+        document.getElementById('taskList').appendChild(li);
+    }
+
+    function removeTask(btn) {
+        const text = btn.parentElement.firstChild.textContent.trim();
+        removeLocalTask(text);
+        btn.parentElement.remove();
+    }
+
+    // Funciones para guardar en el teléfono (LocalStorage)
+    function saveLocalTask(task) {
+        let tasks = localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : [];
+        tasks.push(task);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+
+    function getTasks() {
+        let tasks = localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : [];
+        tasks.forEach(task => createTaskElement(task));
+    }
+
+    function removeLocalTask(task) {
+        let tasks = JSON.parse(localStorage.getItem('tasks'));
+        const index = tasks.indexOf(task);
+        tasks.splice(index, 1);
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+    }
+</script>
+
 </body>
 </html>
